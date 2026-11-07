@@ -1,0 +1,293 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern,amsmath,amssymb,amsthm,booktabs,longtable,array}
+\usepackage[margin=25mm]{geometry}
+\usepackage{microtype}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage{fancyhdr}
+\newcommand{\odim}{\operatorname{odim}}
+\newcommand{\ms}[1]{\left\{\!\left\{#1\right\}\!\right\}}
+\newcommand{\code}[1]{{\small\nolinkurl{#1}}}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\renewcommand{\thelemma}{\arabic{lemma}}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small Outer multiset dimension of a three-path grid family}
+\fancyhead[R]{\small Yonezu / No.58}
+\fancyfoot[L]{\footnotesize Preprint v1.0 / 2026-11-07}
+\fancyfoot[R]{\footnotesize\thepage}
+\setlength{\headheight}{15pt}
+\setlength{\emergencystretch}{2em}
+\hypersetup{pdftitle={Exact Outer Multiset Dimension of the Three-Dimensional Grid Family P2 square P3 square Pn},pdfauthor={Ryutaro Yonezu},pdfsubject={Computer-assisted proof; preprint; novelty inconclusive},pdfkeywords={outer multiset dimension, Cartesian product, grid graph, computer-assisted proof}}
+\title{Exact Outer Multiset Dimension of the Three-Dimensional Grid Family\texorpdfstring{\\$P_2\square P_3\square P_n$}{ P2 square P3 square Pn}}
+\author{Ryutaro Yonezu\\\small Independent Researcher}
+\date{November 7, 2026\\\small No.58 / Version 1.0 / Preprint}
+\begin{document}
+\maketitle
+\begin{abstract}
+An outer multiset resolving set distinguishes the vertices outside the set by their unordered multisets of distances to its members. We give a computer-assisted proof that $\odim(P_2\square P_3\square P_n)=4$ for every integer $n\ge6$. The lower bound combines a unit-cube obstruction for sets of size at most two, a collision-lifting reduction to at most 35 layers for triples with fewer than two graph corners, and a 336-type ordinal classification for the remaining triples. Its 64 unobstructed types reduce, under reflections, to three parameterized families and five exceptional templates. Twenty-four affine certificate branches provide exterior distance collisions throughout their domains. The upper bound uses explicit four-landmark constructions for two parity families and the cases $n=6,8$. Finite exhaustive checks, symbolic identities, and arguments valid for all parameters are distinguished throughout. This is a narrowly scoped preprint: novelty is inconclusive, references are partially verified, and human peer review has not been performed.
+\end{abstract}
+\noindent\textbf{Review and rights.} Computer-assisted proof. Independent AI review is scope-limited and user-supplied; it is not a complete independent formalization or a third-party rederivation of every branch. Windows PowerShell 5.1 reproduction: PASS for the frozen v0.3/Audit D workflow and the v0.5 difference checks. \textbf{NOVELTY INCONCLUSIVE; REFERENCES PARTIAL; not human peer-reviewed.} Copyright \copyright\ 2026 Ryutaro Yonezu. All rights reserved.
+
+\section{Introduction and scope}
+Gil-Pons et al.~\cite{gil} introduced the outer multiset dimension. In contrast with an ordered metric representation, a multiset forgets which landmark realizes each distance. In contrast with ordinary multiset dimension, the outer parameter requires separation only outside the landmark set. These distinctions are essential here.
+
+Klav\v zar, Kuziak, and Yero~\cite{kky} proved that the outer multiset dimension of the Cartesian product of two nontrivial paths is three. The survey of Farhan et al.~\cite{survey} records extending the two-path result to products of more paths as Problem 10. The present result concerns only the special infinite family $P_2\square P_3\square P_n$, $n\ge6$. It is a candidate partial response to that broader problem; it does not solve Problem 10 in full or determine arbitrary three-dimensional grids.
+
+Mora, Souto-Salorio, and Tarr\'io-Tobar~\cite{mora} study ordered resolving sets and fault tolerance in three-dimensional grids. Their parameter does not give the exact outer multiset value proved here. Cylindrical graphs with ordinary multiset dimension~\cite{marcelo}, two-cycle toroidal grids~\cite{peng}, and general bounds and circulant constructions~\cite{araujo} are also relevant but concern different settings. These comparisons are a limited literature screen. Full-text comparison, downstream citation searches, alternate nomenclature, and possible implications of general theorems remain incomplete. No first-discovery, exclusive-priority, or novelty-PASS claim is made.
+
+\section{Definitions and main result}
+Let $P_r$ denote the path with $r$ vertices. For $n\ge6$ put $N=n-1$ and
+\[
+G_n=P_2\square P_3\square P_n,\qquad
+V(G_n)=\{0,1\}\times\{0,1,2\}\times\{0,\ldots,N\}.
+\]
+The graph distance is Manhattan distance:
+\[
+d((x,y,z),(a,b,c))=|x-a|+|y-b|+|z-c|.
+\]
+For $S\subseteq V(G_n)$, write $M_S(v)=\ms{d(v,s):s\in S}$, retaining multiplicities. The set $S$ is \emph{outer multiset resolving} when $M_S(u)\ne M_S(v)$ for all distinct $u,v\in V(G_n)\setminus S$. Its minimum cardinality is $\odim(G_n)$.
+
+\begin{theorem}\label{thm:main}
+For every integer $n\ge6$, $\odim(P_2\square P_3\square P_n)=4$.
+\end{theorem}
+
+The proof is computer-assisted. The finite statements used below are specified explicitly and verified by the accompanying frozen programs. The unbounded conclusion follows from the lifting, ordinal, and algebraic arguments, not from extrapolating a scan over finitely many lengths.
+
+An outer multiset resolving set is an ordinary ordered resolving set. Indeed, an ordered-distance collision cannot contain a landmark: its coordinate for that landmark is zero at the landmark and positive at any distinct vertex. Thus an ordered collision is an exterior unordered collision as well.
+
+\section{The lower bound}
+\setcounter{lemma}{-1}
+\begin{lemma}[Unit-cube obstruction]\label{lem:small}
+For every $n\ge2$, no set of cardinality at most two is outer multiset resolving in $G_n$.
+\end{lemma}
+\begin{proof}
+Choose an induced unit cube in the three coordinate directions. For a fixed landmark, the distance increment along an oriented edge in a given direction is $+1$ or $-1$ and is constant across the parallel edges of the cube. With two landmarks, each direction has a sign column in $\{+1,-1\}^2$. Modulo simultaneous negation, there are two sign classes. Of the three directions, two therefore have equal or opposite columns. On their unit square, equal columns give equal ordered distances at the $(1,0)$ and $(0,1)$ corners; opposite columns give equality at the $(0,0)$ and $(1,1)$ corners. The two vertices are distinct and exterior by the zero-coordinate argument above. With one landmark the same sign argument applies in one coordinate. With no landmarks all multisets are empty. No external metric-dimension theorem is needed.
+\end{proof}
+
+A \emph{graph corner} is a vertex $(x,y,z)$ with $y\in\{0,2\}$ and $z\in\{0,N\}$. There are eight. We divide three-landmark sets according to their number of graph corners.
+
+\begin{lemma}[Few-corner triples]\label{lem:compression}
+For every $n\ge2$, a three-vertex set containing fewer than two graph corners has distinct vertices at distance two or four with the same ordered distances to the three landmarks.
+\end{lemma}
+\begin{proof}
+First consider a maximal run of at least nine consecutive $z$-layers containing no landmark. Delete a layer $k$ with at least four site-free layers on either side and shift all layers above $k$ down by one. Suppose the shortened grid has a collision $u',v'$ at distance at most four.
+
+If both vertices are below $k$, lift them unchanged. For each landmark above the deleted layer, both distances increase by one; for other landmarks both are unchanged. If both vertices are on or above $k$ in the shortened grid, shift both up by one. Now landmarks below the cut contribute a common increase of one.
+
+If the vertices straddle the cut, their longitudinal separation is at most four. Both therefore lie inside the same empty run. Lift them using their shortened longitudinal coordinates without shifting either. Every landmark lies strictly on one side of both vertices. The difference of their distances to each landmark is unchanged. The pair remains distinct, at the same distance two or four. In each case the ordered collision lifts.
+
+Deletion preserves the number of corner landmarks. Any hypothetical counterexample can thus be shortened until every empty run has length at most eight. There are at most three occupied layers and four empty runs, giving at most $3+4\cdot8=35$ layers.
+
+It remains to establish the finite assertion for $n=2,\ldots,35$. The program \code{No58_lower_corner_lemma_v03.cpp} constructs the full Manhattan distance matrix for each length and enumerates every triple with fewer than two corners. It rejects a triple either by the exact unit-square condition below or by directly finding a pair at distance two or four whose three ordered distances agree. The total is 13,921,300 triples: 13,864,044 have a square obstruction and 57,256 are rejected by direct short-pair search. There are no survivors. The finite assertion together with collision lifting proves the lemma.
+\end{proof}
+
+\paragraph{Exact unit-square condition.}
+For a landmark triple, encode the signs of distance increments across a coordinate cut by a three-bit mask, identifying a mask with its complement. Equal classes for cuts in two \emph{different} coordinate directions give a unit square with a diagonal ordered collision, by the same calculation as Lemma~\ref{lem:small}. A longitudinal cut mask changes only at a landmark coordinate plus one; checking the corresponding breakpoints is exact. Cuts in the same direction are not compared. This justifies the shortcut in the finite program. The independently implemented frozen Audit A bitset program also enumerates the same triples without this shortcut; it is supplementary author-side evidence.
+
+\begin{lemma}[Ordinal classification]\label{lem:types}
+For $N\ge5$, every three-landmark set with at least two graph corners either has a unit-square ordered collision or is, under coordinate reflections, one of the families $A(t),B(t),C(t)$ or the templates $E_0,\ldots,E_4$ defined below.
+\end{lemma}
+\begin{proof}
+Choose two corner landmarks. The third landmark lies at a boundary layer or an interior layer $t$. Denote longitudinal positions by $0,I,N$. Unit-cut masks depend only on the strict ordering $0<t<N$, not on the sizes of the gaps. There are
+\[
+\binom82\cdot10+\binom83=336
+\]
+ordinal types before applying the unit-square condition: for exactly two corners the third vertex has four noncorner boundary positions or six interior positions; the remaining types have three corners.
+
+The exact finite-set checker \code{No58_lower_symbolic_classification_v03.py} enumerates the 336 types and tests the square condition, including complement masks. Of these, 272 have an obstruction and 64 survive. The survivors consist of 16 types with two corners and a boundary noncorner, 16 with two corners and an interior landmark, and 32 with three corners. The checker compares the survivor set directly with the closure of the following templates under the eight reflections
+\[
+(x,y,z)\longmapsto (x\text{ or }1-x,\ y\text{ or }2-y,\ z\text{ or }N-z).
+\]
+There are no missing or extra types. This is a finite ordinal classification, valid for every allowed interior coordinate, and proves the lemma.
+\end{proof}
+
+The parameterized families, for $0\le t\le N$, are
+\begin{align*}
+A(t)&=\{(0,0,0),(0,0,N),(0,2,t)\},\\
+B(t)&=\{(0,0,0),(0,0,N),(1,0,t)\},\\
+C(t)&=\{(0,0,0),(1,2,0),(0,2,t)\}.
+\end{align*}
+The exceptional templates are
+\begin{align*}
+E_0&=\{(0,0,0),(0,1,N),(0,2,0)\},\\
+E_1&=\{(0,0,0),(0,1,N),(1,0,N)\},\\
+E_2&=\{(0,0,0),(0,2,0),(1,0,0)\},\\
+E_3&=\{(0,0,0),(0,2,0),(1,1,0)\},\\
+E_4&=\{(0,0,0),(0,2,N),(1,0,N)\}.
+\end{align*}
+For a grid of $n$ layers, the unobstructed physical types number $16(n-2)+16+32=16n+16$. This is a count after the local obstruction test; it is not asserted to classify all ordinary metric bases.
+
+\begin{lemma}[Exterior collisions]\label{lem:collisions}
+Every normal form in Lemma~\ref{lem:types} fails outer multiset resolution for $N\ge5$.
+\end{lemma}
+\begin{proof}
+Tables~\ref{tab:abc} and \ref{tab:exceptions} give two distinct exterior vertices with the same distance multiset in every case. Write $N=2m$ or $2m+1$ as appropriate. In branches using $t=2k$ or $2k+1$, $k$ is the indicated integer. When $h$ occurs, $h=m+k+1$. Each identity follows by substituting the coordinates into the Manhattan formula. Bounds and exteriority are part of the certificate, not assumptions inferred from multiset equality.
+
+The branch conditions are exhaustive. For $A$, first remove $t=0,N$, then split by the parity of $t$ and $N$; for even $N$ and odd $t$, compare $t$ with $m$. For $B$ and even $N$, use $t<m$, $t=m$, $m<t<N$, or $t=N$; for odd $N$ use $t=1$, odd $t\ge3$, $t=N-1$, or the remaining even $t<N-1$. For $C$, use $t=0$, positive even $t$, or odd $t$. The exceptions use the parity split only for $E_4$.
+
+The supplementary v0.5 checker verifies all 24 affine branches. For nonnegative slack parameters $p,q$, each coordinate and distance difference is affine. The checker reconstructs coefficients by integer finite differences and verifies constant signs of every absolute-value argument over the full orthant. Coefficient inequalities certify coordinates in range, distinctness, exteriority, and equality of the distance multisets for every slack value. Table~\ref{tab:inverse} gives the inverse slack map for every admissible $(N,t)$, showing that the branch certificates cover the full domain. The additional branch 24 explicitly includes $B(N)$ for even $N$, rather than relying on an omitted boundary or a finite scan. Reflections preserve all required conditions, completing the proof.
+\end{proof}
+
+\begingroup\small\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}r p{48mm} l l@{}}
+\caption{Family collision witnesses. $M$ is the common distance multiset; each row lists its three elements with multiplicity. $h=m+k+1$.}\label{tab:abc}\\
+\toprule
+$j$ & Family and condition & $u;\ v$ & $M$ \\
+\midrule\endfirsthead
+\toprule $j$ & Family and condition & $u;\ v$ & $M$ \\\midrule\endhead
+\bottomrule\endfoot
+1 & $A$, $t=0$ & $(0,2,1);(1,0,0)$ & $1,3,N+1$\\[3pt]
+2 & $A$, $t=N$ & $(0,2,N-1);(1,0,N)$ & $1,3,N+1$\\[3pt]
+3 & $A$, $t=2k$, $1\le k$, $2k<N$ & $(0,0,k);(0,1,k+1)$ & $k,k+2,N-k$\\[3pt]
+4 & $A$, $N=2m+1$, $t=2k+1$, $0\le k\le m-1$ & $(0,0,h);(0,1,h-1)$ & $h,m-k,m-k+2$\\[3pt]
+5 & $A$, $N=2m$, odd $t<m$ & $(0,1,m+1);(1,0,m-1)$ & $m,m+2,m+2-t$\\[3pt]
+6 & $A$, $N=2m$, odd $t>m$ & $(0,1,m-1);(1,0,m+1)$ & $m,m+2,t-m+2$\\[3pt]
+7 & $A$, $N=2m$, $t=m$ odd & $(0,0,m-1);(0,0,m+1)$ & $m-1,m+1,3$\\[3pt]
+8 & $B$, $N=2m$, $t<m$ & $(0,1,m-1);(1,0,m+1)$ & $m,m+2,m+1-t$\\[3pt]
+9 & $B$, $N=2m$, $m<t<N$ & $(0,1,m+1);(1,0,m-1)$ & $m,m+2,t-m+1$\\[3pt]
+10 & $B$, $N=2m$, $t=m$ & $(0,0,m-1);(0,0,m+1)$ & $m-1,m+1,2$\\[3pt]
+11 & $B$, $N=2m+1$, $t=1$ & $(0,1,0);(1,1,1)$ & $1,3,N+1$\\[3pt]
+12 & $B$, $N=2m+1$, $t=2k+1$, $k\ge1$ & $(0,0,k);(1,0,k+1)$ & $k,k+2,N-k$\\[3pt]
+13 & $B$, $N=2m+1$, $t=N-1$ & $(0,1,N);(1,1,N-1)$ & $1,3,N+1$\\[3pt]
+14 & $B$, $N=2m+1$, $t=2k<N-1$ & $(0,0,h);(1,0,h-1)$ & $h,m-k,m-k+2$\\[3pt]
+15 & $C$, $t=0$ & $(0,2,1);(1,0,0)$ & $1,2,3$\\[3pt]
+16 & $C$, $t=2k\ge2$ & $(0,0,k);(0,1,k+1)$ & $k,k+2,k+3$\\[3pt]
+17 & $C$, $t=2k+1$ & $(0,0,k+1);(1,0,k)$ & $k+1,k+2,k+4$\\[3pt]
+24 & $B$, $N=2m$, $t=N$ & $(0,1,m+1);(1,0,m-1)$ & $m,m+2,m+1$\\
+\end{longtable}\endgroup
+
+\begin{table}[ht]\centering\small
+\caption{Exceptional-template collision witnesses.}\label{tab:exceptions}
+\begin{tabular}{@{}rl ll@{}}\toprule
+$j$ & Template & $u;\ v$ & Common multiset elements\\\midrule
+18 & $E_0$ & $(1,0,0);(1,2,0)$ & $1,3,N+2$\\
+19 & $E_1$ & $(0,1,0);(1,0,0)$ & $1,N,N+2$\\
+20 & $E_2$ & $(1,2,0);(0,0,1)$ & $1,2,3$\\
+21 & $E_3$ & $(1,0,0);(1,2,0)$ & $1,1,3$\\
+22 & $E_4$, $N=2m+1$ & $(0,0,m);(1,0,m+1)$ & $m,m+2,m+3$\\
+23 & $E_4$, $N=2m$ & $(0,0,m);(0,1,m+1)$ & $m,m+1,m+2$\\\bottomrule
+\end{tabular}
+\end{table}
+
+\begingroup\small
+\begin{longtable}{@{}r p{63mm} ll@{}}
+\caption{Inverse slack maps to the frozen affine branch formulas. Branch conditions are those in Tables~\ref{tab:abc}--\ref{tab:exceptions}. Here $m=\lfloor N/2\rfloor$. All listed $p,q$ are nonnegative on their domains.}\label{tab:inverse}\\
+\toprule $j$ & Additional notation & $p$ & $q$\\\midrule\endfirsthead
+\toprule $j$ & Additional notation & $p$ & $q$\\\midrule\endhead
+\bottomrule\endfoot
+1,2 & $A$ boundary & $N-5$ & $0$\\
+3 & $k=t/2$ & $k-1$ & $N-t-1$\\
+4 & $k=(t-1)/2$ & $k$ & $m-k-1$\\
+5 & $A$, even $N$, $t<m$ & $t-1$ & $m-t-1$\\
+6 & $A$, even $N$, $t>m$ & $t-m-1$ & $2m-t-1$\\
+7 & $A$, even $N$, $t=m$ odd & $m-3$ & $0$\\
+8 & $B$, even $N$, $t<m$ & $t$ & $m-t-1$\\
+9 & $B$, even $N$, $m<t<N$ & $t-m-1$ & $2m-t-1$\\
+10 & $B$, even $N$, $t=m$ & $m-3$ & $0$\\
+11 & $B$, odd $N$, $t=1$ & $m-2$ & $0$\\
+12 & $k=(t-1)/2$ & $k-1$ & $m-k$\\
+13 & $B$, odd $N$, $t=N-1$ & $m-2$ & $0$\\
+14 & $k=t/2$ & $k$ & $m-k-1$\\
+15 & $C$, $t=0$ & $N-5$ & $0$\\
+16 & $k=t/2$ & $k-1$ & $N-t$\\
+17 & $k=(t-1)/2$ & $k$ & $N-t$\\
+18--21 & $E_0,\ldots,E_3$ & $N-5$ & $0$\\
+22 & $E_4$, odd $N$ & $m-2$ & $0$\\
+23 & $E_4$, even $N$ & $m-3$ & $0$\\
+24 & $B$, even $N$, $t=N$ & $m-3$ & $0$\\
+\end{longtable}\endgroup
+
+\paragraph{Certificate interpretation.}
+The v0.5 physical coverage recheck enumerates 268,528 family or exceptional configurations for $N=5,\ldots,420$, including 208 even-$N$ instances of branch 24. This supports the implementation. The all-$N$ coverage argument is the exhaustive partition and inverse formulas, and the identities are certified over the full nonnegative slack orthants. Tests through any finite value, including earlier observations through $n=2499$, are not a proof for all lengths.
+
+\paragraph{Lower-bound conclusion.}
+Lemma~\ref{lem:small} excludes sets of size at most two. Lemma~\ref{lem:compression} excludes triples with fewer than two corners. Lemmas~\ref{lem:types} and \ref{lem:collisions} exclude all remaining triples. Thus $\odim(G_n)\ge4$ for all $n\ge6$.
+
+\section{The four-landmark upper bound}
+Use the following sets:
+\begin{align*}
+S_n&=\{(0,0,0),(0,0,1),(0,0,N),(1,0,2)\} &&(n\ge7\text{ odd}),\\
+S_n&=\{(0,0,0),(0,0,1),(0,0,N),(1,0,5)\} &&(n\ge10\text{ even}),\\
+S_6&=\{(0,0,0),(0,0,2),(0,0,5),(1,0,5)\},\\
+S_8&=\{(0,0,0),(0,0,2),(0,0,7),(1,0,5)\}.
+\end{align*}
+The two infinite constructions are verified by an exact finite reduction. The exceptional sets are checked directly on their finite vertex sets.
+
+\subsection{Finite reduction by distance sums}
+For an infinite-family construction put $t=2$ or $5$. At $(x,y,z)$ write $a=x+y$, $b=1-x+y$, and $q=x+2y\in\{0,\ldots,5\}$. The four distances are
+\[
+a+z,\quad a+|z-1|,\quad a+N-z,\quad b+|z-t|,
+\]
+whose sum is
+\[
+N-t+2\bigl(q+\max(z,t)+\mathbf1_{z=0}\bigr).
+\]
+Equal multisets require equal sums.
+
+If one coordinate is at most $t$, the other is at most $t+6$. There are finitely many horizontal positions and longitudinal coordinates to check. For a fixed pair define
+\[
+F=(a+z,a+|z-1|,b+|z-t|),\qquad o=a-z,
+\]
+and similarly $F',o'$ for the other vertex. The only varying distance is $N+o$ or $N+o'$. Once
+\[
+N>B=\max(F\cup F')-\min(o,o')+2,
+\]
+these terms exceed all fixed distances. A tail equality would then require both $o=o'$ and equality of the three-element multisets $F,F'$. The frozen program checks all admissible lengths through a bound at least $B+2$ and rejects every possible tail identity. Landmark vertices are excluded from the finite outer checks.
+
+If both longitudinal coordinates exceed $t$, equality of sums forces $w=z+c$, where $c=q(x,y)-q(x',y')\in[-5,5]$. Equal horizontal positions force $c=0$ and hence the same vertex, so discard that case. Subtract $z$ from every distance and put $H=N-2z$. The two multisets become
+\[
+C_1\cup\ms{a+H},\qquad C_2\cup\ms{a'+H-c},
+\]
+where
+\[
+C_1=\ms{a,a-1,b-t},\qquad
+C_2=\ms{c+a',c+a'-1,c+b'-t}.
+\]
+The parity condition is $H\equiv N\pmod2$. Unless $C_1=C_2$ and $a=a'-c$ identically, equality forces a variable element to coincide with a fixed element of $C_1$ or $C_2$. It therefore suffices to check the finite candidate set
+\[
+\{r-a:r\in C_1\cup C_2\}\ \cup\
+\{r-(a'-c):r\in C_1\cup C_2\}.
+\]
+The program rejects every identity and every candidate with the required parity. This proves the upper bound for all lengths in the two parity families. The finite specification is implemented in \code{No58_upper_symbolic_proof_v01.py}; no floating-point arithmetic or external solver is used.
+
+\subsection{A separate exact permutation certificate}
+The frozen Audit D checker independently implements a second author-side computation. For each of the 21 unordered pairs of horizontal positions, allowing equal positions, split each longitudinal coordinate into $z=0$, $1\le z\le t$, or $t+1\le z\le N$. Compare the four distance lists under all $4!=24$ permutations. For equal horizontal positions impose $w\ge z+1$. Writing $N=N_{\min}+2k$, each region gives affine equalities and inequalities in $k,z,w$, with $k\ge0$.
+
+Exact rational row reduction and Fourier--Motzkin elimination give Table~\ref{tab:upper}. The real-feasible remnants satisfy $z=w+1$ and respectively $k=w-7/2$ or $k=w-13/2$. They have no integer solutions. This checks all vertices and is stronger than the required outer separation for these two infinite constructions. It is a distinct internal proof route; it is not claimed as external human review.
+
+\begin{table}[ht]\centering\small
+\caption{Exact upper-certificate outcomes, 4,536 cases per family.}\label{tab:upper}
+\begin{tabular}{@{}lrr@{}}\toprule
+Outcome & Odd $n\ge7$ & Even $n\ge10$\\\midrule
+Equality contradiction & 3,828 & 4,026\\
+Consistent equalities, real-infeasible inequalities & 702 & 507\\
+Real-feasible remnants & 6 & 3\\
+Integer-feasible collisions & 0 & 0\\\bottomrule
+\end{tabular}
+\end{table}
+
+Direct Manhattan-distance enumeration accepts $S_6$ and $S_8$. Thus $\odim(G_n)\le4$ for every $n\ge6$. Combining this with the lower bound proves Theorem~\ref{thm:main}.
+
+\section{Reproducibility, provenance, and review limits}
+The distribution includes the TeX source, unchanged mathematical source documents, frozen v0.3 and Audit D programs and logs, the v0.5 supplementary branch and coverage checkers, environment-independent execution output, an execution guide, and SHA256 manifests. The original archive provenance is recorded separately. Historical files retain their original HOLD or pending-review labels; these labels describe their earlier stages, not the authorized v1.0 publication decision.
+
+For this release the original finite lower verifier was compiled with C++17, optimization, and strict warnings; it and the symbolic classification, original upper certificate, exact Audit D upper certificate, and both v0.5 checkers completed successfully. Integrity checks establish byte identity, not mathematical correctness. The computer-assisted proof additionally depends on the correctness of the described reductions and the verifiers.
+
+The latest independent AI review is reported in the researcher-supplied publication instructions as MODEL / PROOF / COMPUTATION PASS for v0.5. Earlier reports had explicit limitations: a previous collision-witness rederivation was PARTIAL, and the v0.4 review flagged a missing written argument for sets of size at most two and an even-$N$ endpoint coverage omission. The frozen v0.5 documents predate the latest review. The present publication retains the review scope: it does not assert a complete independent formalization or independent rederivation of every repaired branch. No external review transcript is manufactured or inferred from successful code execution.
+
+User-supplied Windows PowerShell 5.1 logs support PASS for the frozen v0.3/Audit D workflow and for the v0.5 24/24 branch and 268,528-configuration checks. Private transcripts, user names, machine names, local paths, and execution-host details are excluded. Only a sanitized, environment-independent output summary is distributed.
+
+\textbf{References remain PARTIAL and novelty remains INCONCLUSIVE.} Several publisher records and an author-hosted version of the two-path paper were checked during publication preparation; the 2026 arXiv survey and toroidal-grid record could not be independently fetched in that preparation environment, so their details and the Problem 10 identification also rely on the supplied prior-art audit. This limitation does not affect the self-contained mathematical argument, but it limits the literature assessment. The author has authorized this limited preprint with those uncertainties retained. Human peer review has not been performed. All rights reserved.
+
+\begin{thebibliography}{9}
+\bibitem{gil} R. Gil-Pons, Y. Ram\'irez-Cruz, R. Trujillo-Rasua, and I. G. Yero, \emph{Distance-based vertex identification in graphs: the outer multiset dimension}, Applied Mathematics and Computation \textbf{363} (2019), 124612. \url{https://arxiv.org/abs/1902.03017}.
+\bibitem{kky} S. Klav\v zar, D. Kuziak, and I. G. Yero, \emph{Further Contributions on the Outer Multiset Dimension of Graphs}, Results in Mathematics \textbf{78} (2023), Article 50; first online December 31, 2022. \url{https://doi.org/10.1007/s00025-022-01829-8}. Author version: \url{https://users.fmf.uni-lj.si/klavzar/preprints/2207.06834.pdf}.
+\bibitem{mora} M. Mora, M. J. Souto-Salorio, and A. D. Tarr\'io-Tobar, \emph{Resolving sets tolerant to failures in three-dimensional grids}, Mediterranean Journal of Mathematics \textbf{19} (2022), Article 188. \url{https://doi.org/10.1007/s00009-022-02096-1}.
+\bibitem{survey} Farhan, Klav\v zar, Kuziak, and Yero, \emph{Multiset resolvability parameters in graphs: A survey with new results and open problems}, arXiv:2607.10311 (July 11, 2026), Problem 10. \url{https://arxiv.org/html/2607.10311}. Bibliographic details and problem identification follow the supplied audit; independently fetching this record during publication preparation was unsuccessful.
+\bibitem{peng} B. Peng, \emph{The Outer Multiset Dimension of Toroidal Grids}, arXiv:2609.20073 (September 17, 2026). \url{https://arxiv.org/abs/2609.20073}. Supplied-audit reference; independently fetching this record during publication preparation was unsuccessful.
+\bibitem{araujo} G. Araujo-Pardo, C. Dalf\'o, M. Olsen, M. A. Reyes, and R. Simanjuntak, \emph{On the outer multiset dimensions of graphs}, Bolet\'in de la Sociedad Matem\'atica Mexicana \textbf{32} (2026), Article 142; October 17, 2026. \url{https://doi.org/10.1007/s40590-026-00973-3}.
+\bibitem{marcelo} R. M. Marcelo, M. A. C. Tolentino, A. D. Garciano, and J. C. Buot, \emph{On multiset dimension of cylindrical graphs}, Journal of Combinatorial Mathematics and Combinatorial Computing \textbf{126} (2025), 225--240. \url{https://doi.org/10.61091/jcmcc126-15}.
+\end{thebibliography}
+\end{document}
