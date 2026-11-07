@@ -2,6 +2,10 @@
 
 Ryutaro Yonezu — Independent Researcher. Preprint v1.0, 2026-11-07.
 
+[Zenodo Preprint](https://zenodo.org/records/24024946) · [DOI: 10.5281/zenodo.24024946](https://doi.org/10.5281/zenodo.24024946) · [GitHub Release v1.0](https://github.com/yonezaemon1-hub/no58-outer-multiset-dimension-3d-grid/releases/tag/v1.0)
+
+[Paper PDF](No58_v1.0_PREPRINT_20261107.pdf) · [Reproducibility ZIP](No58_v1.0_REPRODUCIBILITY_20261107.zip) · [SHA256](SHA256SUMS.txt)
+
 For every integer **n ≥ 6**, **odim(P₂ □ P₃ □ Pₙ) = 4**. A landmark set distinguishes every pair of distinct vertices **outside** the set using **unordered distance multisets**, retaining multiplicities. The claim covers this three-path family only.
 
 Computer-assisted proof. Independent AI review is user-supplied and scope-limited: the latest publication instruction reports v0.5 MODEL / PROOF / COMPUTATION PASS. Earlier collision-witness rederivation was PARTIAL; complete independent formalization and third-party rederivation of every branch are not claimed. **Not human peer-reviewed. NOVELTY INCONCLUSIVE. REFERENCES PARTIAL. All rights reserved.**
