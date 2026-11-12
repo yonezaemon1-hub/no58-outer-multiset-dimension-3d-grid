@@ -49,3 +49,10 @@ Historical HOLD / audit-pending statements inside frozen files describe those ea
 The outer multiset parameter is prior art (Gil-Pons et al., 2019). Klavžar–Kuziak–Yero (2023) determine the two-path case. Mora et al. (2022) study ordered metric resolution, Marcelo et al. (2025) ordinary multiset dimension on cylinders, Peng (2026) two-cycle tori, and Araujo-Pardo et al. (2026) general bounds/circulants. The supplied Farhan et al. survey (2026), Problem 10, motivates products of more than two paths. This result is a candidate partial response for one special infinite family. It makes no priority guarantee or claim to solve the entire problem. Some full texts and the latest citation graph remain unchecked; the survey and Peng arXiv records could not be independently fetched during publication preparation. Full references and exact access limits are in the manuscript and `REVIEW_SCOPE.md`.
 
 Copyright © 2026 Ryutaro Yonezu. **All rights reserved.** Public availability is not a grant of an open-source or Creative Commons license.
+
+## Author correspondence (metadata update, 2026-11-12)
+
+**Ryutaro Yonezu — Independent Researcher**  
+Research correspondence: **yonezaemon1+research@gmail.com**
+
+This contact-information addition does not revise any mathematical claims, frozen verification files, published preprint PDF, release assets, DOI, or existing SHA256 checksums.
